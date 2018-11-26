@@ -1,0 +1,6 @@
+[package]
+name = "variants"
+version = "0.1.0"
+authors = ["Kraigo <kraigo@live.com>"]
+
+[dependencies]
