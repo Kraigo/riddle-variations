@@ -82,8 +82,12 @@ fn main() {
     let mut source_modified = vec![];
     let target = 30.0;
     let mut result = vec![];
-    let after_point = 2;
+    let after_point = 1;
     let source_len = source.len() as i32;
+
+    println!("== Source: {:?}", source);
+    println!("== Target: {}", target);
+    println!("== Point: {}", after_point);
     
     for i in 0..source_len {
         for n in 0..source_len {
@@ -118,30 +122,44 @@ fn main() {
     source.sort_by(|a, b| a.partial_cmp(b).unwrap());
     source.dedup();
 
-    println!("Variants items {}", source.len());
-
+    println!("Variants: {}", source.len());
     let variants = Variants::new()
         .arr(source)
         .basis(3)
         .finalize();
 
+    println!("Combitaions: {}", variants.v_size);
+    println!("...");
+    print!("Current iter:");
+    let mut var_count = 0.0;
+    let var_size = variants.v_size.clone() as f32;
     for v in variants {
-        let sum = v.iter().fold(0f32, | mut sum, &val| {sum += val; sum});
+        var_count += 1.0;
+        let sum = v.iter().fold(0f32, |mut sum, &val| {sum += val; sum});
+
+        if var_count % 5000.0 == 0.0 {
+            let percent = (&var_count / &var_size) * 100.0;            
+            print!("\rCurrent iter: {:.2}%", percent);
+        }
+
         if sum == target {
             result.push(v);
         }
     }
-
+    print!("\rCurrent iter: done        ",);
+    println!("\n...Sort variants");
     for r in &mut result {
         r.sort_by(|a, b| a.partial_cmp(b).unwrap())
     }
 
+    println!("...Sort result");
     result.sort_by(|a,b| {
       let first = format!("{:?}", a);
       let second = format!("{:?}", b);
       first.partial_cmp(&second).unwrap()
     });
-
+    
+    println!("...Dedup result");
     result.dedup_by(|a,b| {
       let first = format!("{:?}", a);
       let second = format!("{:?}", b);
